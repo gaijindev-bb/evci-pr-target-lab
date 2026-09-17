@@ -1,0 +1,33 @@
+# EV-CI stub of upstream build-test-coverage.yml (callable).
+# Upstream checks out checkout_ref (fork code) and runs the project's build
+# with coveralls_repo_token available. This stub checks out the same ref and
+# executes the checked-out repo's build.sh with the secret in env - the same
+# trust relationship (fork code executes where a repo secret exists).
+name: build-test-coverage (EV-CI stub)
+on:
+  workflow_call:
+    inputs:
+      checkout_ref:
+        required: true
+        type: string
+    outputs:
+      project_version:
+        value: ${{ jobs.build.outputs.project_version }}
+    secrets:
+      coveralls_repo_token:
+        required: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      project_version: 1.0.0-EVCI-CANARY
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.checkout_ref }}
+      - name: Run checked-out (possibly fork) build script with secret present
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.coveralls_repo_token }}
+        run: |
+          echo "checked-out commit: $(git rev-parse HEAD)"
+          bash ./build.sh
