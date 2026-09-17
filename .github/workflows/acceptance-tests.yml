@@ -18,6 +18,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.checkout_ref }}
+          # EV-CI variant B: opt-in to unsafe fork checkout to test end-to-end
+          # exposure. Upstream truelayer-java@d4173ee2 does NOT set this flag;
+          # current checkout@v4 refuses fork checkout without it (see VARIANT note).
+          allow-unsafe-pr-checkout: true
       - name: Run checked-out acceptance script with secrets present
         env:
           ACCEPTANCE_TEST_CLIENT_ID: ${{ secrets.tl_client_id }}
