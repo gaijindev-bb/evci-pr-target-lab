@@ -1,0 +1,33 @@
+# EV-CI stub of upstream release-snapshot.yml (callable).
+name: release-snapshot (EV-CI stub)
+on:
+  workflow_call:
+    inputs:
+      checkout_ref:
+        required: true
+        type: string
+      project_version:
+        required: true
+        type: string
+    secrets:
+      maven_central_username: { required: true }
+      maven_central_password: { required: true }
+      maven_central_signing_key: { required: true }
+      maven_central_signing_key_password: { required: true }
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.checkout_ref }}
+      - name: Run checked-out release script with secrets present
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.maven_central_username }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.maven_central_password }}
+          PGP_SIGNING_IN_MEMORY_KEY: ${{ secrets.maven_central_signing_key }}
+          PGP_SIGNING_IN_MEMORY_KEY_PASSWORD: ${{ secrets.maven_central_signing_key_password }}
+          PROJECT_VERSION: ${{ inputs.project_version }}
+        run: |
+          echo "checked-out commit: $(git rev-parse HEAD)"
+          bash ./release.sh
