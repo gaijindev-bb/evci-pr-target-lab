@@ -1,0 +1,29 @@
+# EV-CI stub of upstream acceptance-tests.yml (callable).
+name: acceptance-tests (EV-CI stub)
+on:
+  workflow_call:
+    inputs:
+      checkout_ref:
+        required: true
+        type: string
+    secrets:
+      tl_client_id: { required: true }
+      tl_client_secret: { required: true }
+      tl_signing_key_id: { required: true }
+      tl_signing_private_key: { required: true }
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.checkout_ref }}
+      - name: Run checked-out acceptance script with secrets present
+        env:
+          ACCEPTANCE_TEST_CLIENT_ID: ${{ secrets.tl_client_id }}
+          ACCEPTANCE_TEST_CLIENT_SECRET: ${{ secrets.tl_client_secret }}
+          ACCEPTANCE_TEST_SIGNING_KEY_ID: ${{ secrets.tl_signing_key_id }}
+          ACCEPTANCE_TEST_SIGNING_PRIVATE_KEY: ${{ secrets.tl_signing_private_key }}
+        run: |
+          echo "checked-out commit: $(git rev-parse HEAD)"
+          bash ./acceptance.sh
